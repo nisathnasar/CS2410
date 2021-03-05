@@ -8,7 +8,7 @@ class Model {
     private $dbname;
     private $username;
     private $password;
-    public $pdo;
+    private $pdo;
 	# define the constructor which has four arguments for $server, $dbname, $username, $password. 
 	# The $pdo field should be assigned as null  
 	function __construct($server, $dbname, $username, $password) {
@@ -59,16 +59,13 @@ class Model {
 				$balance = $row["balance"];
 			}
 		}
-		if($amount <= $balance){
+		if($amount >= $balance){
 			print "Debug: you don't have enough balance > Throwing null.";
 			return null;
 		}
 		$balance-=$amount;
-		$sth=$this->pdo->prepare("UPDATE savings SET(balance=:balance) WHERE(id=:id)");
-      $sth->bindParam(':id', $id );
-      $sth->bindParam(':balance', $balance);
-		$sth->execute();
-		return $balance;
+		$sth=$this->pdo->exec("UPDATE savings SET balance='$balance' WHERE id='$id'");
+      return $balance;
    }
 	
 	
@@ -84,10 +81,7 @@ class Model {
 			}
 		}
 		$balance+=$amount;
-		$sth=$this->pdo->prepare("UPDATE savings SET(balance=:balance) WHERE(id=:id)");
-      $sth->bindParam(':id', $id );
-      $sth->bindParam(':balance', $balance);
-		$sth->execute();
+		$sth=$this->pdo->exec("UPDATE savings SET balance='$balance' WHERE id='$id'");
 		return $balance;
 	}
 }

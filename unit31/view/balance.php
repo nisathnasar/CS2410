@@ -1,18 +1,19 @@
 <?php
 if (isset($_POST["balance"])) {
-#Use the "id" from the form input and Get balance value of this id into $account
-#you should call the model method call the Model's getAccountById() method 
+   #Use the "id" from the form input and Get balance value of this id into $account
+   #you should call the model method call the Model's getAccountById() method 
+   
+   $id = $_POST["id"];
+   $account = $this->model->getAccountById($id);
 
-
-
- if ($account != null) {
-  $balance = $account->balance;
-  //Display balance
-    echo "<b><h3>Your balance is: &pound; $balance</h3></b>";
- }
- else {
-    echo "<p>Sorry, there is an error in showing your balance. Make sure to input a valid ID.</p>";
- }
+   if ($account != null) {
+      $balance = $account->balance;
+      //Display balance
+      echo "<b><h3>Your balance is: &pound; $balance</h3></b>";
+   }
+   else {
+      echo "<p>Sorry, there is an error in showing your balance. Make sure to input a valid ID.</p>";
+   }
 }
 //display the form
 ?>

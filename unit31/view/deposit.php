@@ -10,8 +10,10 @@ if (isset($_POST["deposit"])) {
     $id = $_POST["id"];
     $amount = $_POST["amount"];
 
-    $newBalance = $this->model->deposit($id, $amount);
-    print "new Balance: " . $newBalance;
+    if(preg_match('/^[0-9]+$/',trim($_POST["amount"]))){
+        $newBalance = $this->model->deposit($id, $amount);
+        print "new Balance: " . $newBalance;
+    }
 }
 //display the form	
 ?>

@@ -23,3 +23,6 @@ Route::get('/hello', function(){
 
 Route::get('list', 'App\Http\Controllers\AccountController@list');
 Route::get('show/{id}', 'App\Http\Controllers\AccountController@show');
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

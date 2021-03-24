@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Gate;
 use App\Models\Account;
 class AccountController extends Controller
 {
@@ -15,5 +16,13 @@ class AccountController extends Controller
 
     public function list(){
         return view('/list', array('accounts'=>Account::all()));
+    }
+
+    public function display(){
+        $accountsQuery = Account::all();
+        if(Gate::denies('displayall')){
+            $accountsQuery=$accountsQuery->where('userid', auth()->user()->id);
+        }
+        return view('/display', array('accounts'=>$accountsQuery));
     }
 }

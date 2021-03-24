@@ -26,3 +26,5 @@ Route::get('show/{id}', 'App\Http\Controllers\AccountController@show');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('display', 'App\Http\Controllers\AccountController@display')->name('display_account');

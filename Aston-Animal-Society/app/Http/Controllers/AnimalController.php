@@ -15,11 +15,11 @@ class AnimalController extends Controller
         //return view('/show', array('animal' => $animal));
         return view('animals.show', compact('animal'));
     }
-
+/*
     public function list(){
         return view('/list', array('account'=>Animal::all()));
     }
-
+*/
     public function create(){
 
         $accountsQuery = Animal::all();
@@ -118,6 +118,7 @@ class AnimalController extends Controller
         $animal->save();
         return redirect('animals');
     }
+
 
 
 

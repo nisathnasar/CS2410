@@ -51,11 +51,21 @@
 
                                 <td>
 
-                                    <form action="{{ action([App\Http\Controllers\UserRequestController::class, 'store'],
-                                    ['animal' => $animal['id']
-                                    ]) }}" method="POST">
+                                    <!--<form action="{{--
+                                    action(
+                                        [App\Http\Controllers\UserRequestController::class, 'store'],
+                                        ['animal' => $animal['id']]
+                                        )
+                                    --}}" method="post">-->
+
+                                    <form action="{{url('user_requests/store')}}"></form>
                                         <button class="btn btn-primary" type="submit">Request</button>
                                     </form>
+
+                                    <input name="id" type="hidden" value="{{$animal['id']}}">
+
+                                    <a href="{{url('user_requests/create')}}">Make a request</a>
+
                                 </td>
 
                                 @endif

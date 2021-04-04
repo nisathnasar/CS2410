@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\UserRequest;
 
+use Illuminate\Support\Facades\Auth;
+
 use Gate;
 
 
@@ -25,9 +27,9 @@ class UserRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-
+        $this->store($request);
     }
 
     /**
@@ -38,15 +40,18 @@ class UserRequestController extends Controller
      */
     public function store(Request $request)
     {
+
         $userRequest = new UserRequest();
         //$userRequest->user_id = $request->input('user_id');
-        $userRequest->user_id = 1;
-        $userRequest->animal_id = $request->input('id');
+        $userRequest->user_id = Auth::id();
+        //$userRequest->animal_id = $request->input('id');
+        $userRequest->animal_id = 2;
         //$userRequest->request_status = $request->input('request_status');
         $userRequest->request_status = 'waiting_for_approval';
         $userRequest->save();
         //return back()->with('success', 'request made');
-        return redirect('animals');
+
+        //return view('animals.index', compact('animals'));
     }
 
     /**

@@ -12,7 +12,20 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+/*
 Route::get('/', function () {
-    return view('index');
+    return view('welcome');
 });
+*/
+
+Auth::routes();
+
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+use App\Http\Controllers\AnimalController;
+
+use App\Http\Controllers\UserRequestController;
+
+Route::resource('animals', AnimalController::class);
+
+Route::resource('user_requests', UserRequestController::class);

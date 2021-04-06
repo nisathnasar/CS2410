@@ -42,11 +42,15 @@
                             <a href="{{url('animals')}}" class="nav-link">Animals</a>
                         </li>
 
-                            @if (!Gate::denies('add_animals'))
-                            <li class="nav-item">
-                                <a href="{{url('animals/create')}}" class="nav-link">Add Animal</a>
-                            </li>
-                            @endif
+                        @if (!Gate::denies('add_animals'))
+                        <li class="nav-item">
+                            <a href="{{url('animals/create')}}" class="nav-link">Add Animal</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{url('user_requests')}}" class="nav-link">Adoption Requests</a>
+                        </li>
+                        @endif
 
 
 

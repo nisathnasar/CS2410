@@ -22,8 +22,11 @@ class CreateUserRequestsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('animal_id')->references('id')->on('animals');
 
+            $table->unique(array('animal_id', 'user_id'));
+
             $table->enum('request_status', ['approved', 'waiting_for_approval', 'denied'])->default('waiting_for_approval');
             $table->timestamps();
+
         });
     }
 

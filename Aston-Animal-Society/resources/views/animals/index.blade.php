@@ -1,6 +1,24 @@
 @extends('layouts.app')
 @section('content')
 <div class="container">
+    {{--
+    @if (session()->has('success'))
+    <div class="alert alert-success">
+        {{session()->get('success')}}
+    </div>--}}
+    @if (session()->has('requestsuccess'))
+    <div class="alert alert-success">
+        {{session()->get('requestsuccess')}}
+    </div>
+    @elseif (session()->has('modelexists'))
+    <div class="alert alert-success">
+        {{session()->get('modelexists')}}
+    </div>
+    @elseif (session()->has('availableforrequest'))
+    <div class="alert alert-success">
+        {{session()->get('availableforrequest')}}
+    </div>
+    @endif
     <div class="row justify-content-center">
         <div class="col-md-8 ">
             <div class="card">
@@ -50,21 +68,26 @@
                                 @else
 
                                 <td>
-
-                                    <!--<form action="{{--
+                                    <form action="{{
                                     action(
-                                        [App\Http\Controllers\UserRequestController::class, 'store'],
-                                        ['animal' => $animal['id']]
+                                        [App\Http\Controllers\UserRequestController::class, 'create'],
+                                        //['animal' => $animal['id'],]
                                         )
-                                    --}}" method="post">-->
+                                    }}" method="put">
+                                        <input name="id" type="hidden" value="{{$animal['id']}}">
 
-                                    <form action="{{url('user_requests/store')}}"></form>
+                                        @if (App\Models\UserRequest::where('user_id', Auth::id())->where('animal_id', $animal['id'])->first() == null &&
+                                        App\Models\Animal::where('id', $animal['id'])->where('availability', 'available')->first() != null)
+
                                         <button class="btn btn-primary" type="submit">Request</button>
+
+                                        @elseif(App\Models\UserRequest::where('user_id', Auth::id())->where('animal_id', $animal['id'])->first() != null)
+                                        {{-- if this record already exists, then print the status --}}
+                                        {{App\Models\UserRequest::select('request_status')->where('user_id', Auth::id())->where('animal_id', $animal['id'])->first()['request_status']}}
+
+                                        @endif
+
                                     </form>
-
-                                    <input name="id" type="hidden" value="{{$animal['id']}}">
-
-                                    <a href="{{url('user_requests/create')}}">Make a request</a>
 
                                 </td>
 

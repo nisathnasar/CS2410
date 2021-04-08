@@ -22,8 +22,21 @@ class UserRequestController extends Controller
      */
     public function index()
     {
-        $userRequests = UserRequest::all()->toArray();
-        return view('user_requests.index', compact('userRequests'));
+        if (!Gate::denies('add_animals')) {
+
+            $userRequests = UserRequest::all();
+            $userRequests = $userRequests->filter(
+                function ($item) {
+                    if ($item['request_status'] == 'waiting_for_approval') {
+                        return $item;
+                    }
+                }
+            )->toArray();
+            return view('user_requests.index', compact('userRequests'));
+        }
+        else{
+            return back();
+        }
     }
 
     /**
@@ -33,55 +46,26 @@ class UserRequestController extends Controller
      */
     public function create(Request $request)
     {
-        //$accountsQuery = Animal::all();
-
-        //$this->store($request);
-
-        //return view('user_requests.create', array('animals'=>$accountsQuery));
-
-        //return view('animals.index');
-
-        //return \App::call('App\Http\Controllers\AnimalController@index');
-
-        //return redirect()->back()->withSuccess('you have successfully made a request, please wait for approval');
-
-        //return redirect()->back();
-
-        //-------------------------------------------------------
         $user_id = Auth::id();
         $animal_id = $request->input('id');
 
         $modelExists = UserRequest::where('user_id', $user_id)->where('animal_id', $animal_id)->first() == null;
         $availableForAdoption = Animal::where('id', $animal_id)->where('availability', 'available')->first() != null;
 
-        if($modelExists && $availableForAdoption){
+        if ($modelExists && $availableForAdoption) {
 
             $userRequest = new UserRequest();
-            //$userRequest->user_id = $request->input('user_id');
             $userRequest->user_id = $user_id;
             $userRequest->animal_id = $animal_id;
-            //$userRequest->animal_id = 2;
-            //$userRequest->request_status = $request->input('request_status');
             $userRequest->request_status = 'waiting_for_approval';
+            $userRequest->created_at = now();
             $userRequest->save();
-            //return back()->with('success', 'request made');
-
-            //return view('animals.index', compact('animals'));
-
-            //return redirect()->back()->withSuccess('you have successfully made a request, please wait for approval');
             return redirect()->back()->with('requestsuccess', 'you have successfully made a request, please wait for approval');
-
-
-          }
-          else if(!$modelExists) {
-            //dd("record exists and/or is unavailable for request");
+        } else if (!$modelExists) {
             return redirect()->back()->with('modelexists', 'you have already made this request');
-          }
-          else if(!$availableForAdoption){
+        } else if (!$availableForAdoption) {
             return redirect()->back()->with('availableforrequest', 'this animal is not available for request');
-          }
-
-
+        }
     }
 
     /**
@@ -92,42 +76,6 @@ class UserRequestController extends Controller
      */
     public function store(Request $request)
     {
-
-        dd("store");
-        /*
-        $user_id = Auth::id();
-        $animal_id = $request->input('id');
-
-        $modelExists = UserRequest::where('user_id', $user_id)->where('animal_id', $animal_id)->first() == null;
-        $availableForAdoption = Animal::where('id', $animal_id)->where('availability', 'available')->first() != null;
-
-        if($modelExists && $availableForAdoption){
-
-            $userRequest = new UserRequest();
-            //$userRequest->user_id = $request->input('user_id');
-            $userRequest->user_id = $user_id;
-            $userRequest->animal_id = $animal_id;
-            //$userRequest->animal_id = 2;
-            //$userRequest->request_status = $request->input('request_status');
-            $userRequest->request_status = 'waiting_for_approval';
-            $userRequest->save();
-            //return back()->with('success', 'request made');
-
-            //return view('animals.index', compact('animals'));
-
-            return redirect()->back()->withSuccess('you have successfully made a request, please wait for approval');
-
-
-          }
-          else if($modelExists) {
-            //dd("record exists and/or is unavailable for request");
-            return redirect()->back()->with('modelexists', 'you have already made this request');
-          }
-          else if($availableForAdoption){
-            return redirect()->back()->with('availableForRequest', 'this animal is not available for request');
-          }
-          */
-
     }
 
     /**
@@ -138,34 +86,6 @@ class UserRequestController extends Controller
      */
     public function show(Request $request, $id)
     {
-
-        $user_request = UserRequest::
-        where('user_id', $request->input('user_id'))->
-        where('animal_id', $request->input('animal_id'))->get();
-
-        //$idofentry = UserRequest::select('id')->where('user_id', $request->input('user_id'))->where('animal_id', $request->input('animal_id'))->get();
-
-        //dd($idofentry);
-        //dd($user_request);
-
-        foreach ($user_request as $user_request_unit){
-
-          if($user_request_unit['request_status'] == 'waiting_for_approval'){
-            $user_request_unit->request_status = $request->input('request_status');
-            $user_request_unit->save();
-          }
-        }
-
-        $user_request = UserRequest::
-        where('animal_id', $request->input('animal_id'))->get();
-        foreach($user_request as $user_request_unit){
-          if($user_request_unit['request_status'] == 'waiting_for_approval'){
-            $user_request_unit->request_status = 'denied';
-            $user_request_unit->save();
-          }
-        }
-
-        return redirect()->back()->withSuccess("approved");
     }
 
     /**
@@ -176,7 +96,7 @@ class UserRequestController extends Controller
      */
     public function edit($id)
     {
-        dd("edit");
+
     }
 
     /**
@@ -188,14 +108,51 @@ class UserRequestController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user_request = UserRequest::where('user_id', Auth::id())->where('animal_id', $request->input('animal_id'))->get();
-        dd($user_request['animal_id']);
+        $user_request = UserRequest::where('user_id', $request->input('user_id'))->where('animal_id', $request->input('animal_id'))->get()->first();
 
-        if($user_request['request_status'] == 'waiting_for_approval'){
-          $user_request->request_status = $request->input('request_status');
-          $user_request->save();
+        if ($user_request['request_status'] == 'waiting_for_approval') {
+            $user_request->request_status = $request->input('request_status');
+            $user_request->updated_at = now();
+            $user_request->save();
         }
-        redirect()->back();
+
+        if ($request->input('request_status') == 'approved') {
+            $animal = Animal::where('id', $request->input('animal_id'))->get()->first();
+            $animal->adopted_by = $request->input('user_id');
+            $animal->availability = 'unavailable';
+            $animal->updated_at = now();
+            $animal->save();
+        }
+
+
+        //if an animal has been adopted by 1 person, deny all other request to this animal.
+        //get all requests to $request->input('animal_id')
+        $user_requests = UserRequest::where('animal_id', $request->input('animal_id'))->get();
+        //if user clicked approve and not deny
+        if ($request->input('request_status') != 'denied') {
+            //for each request, change status to denied.
+            foreach ($user_requests as $user_request_unit) {
+                if ($user_request_unit['request_status'] == 'waiting_for_approval') {
+                    $user_request_unit->request_status = 'denied';
+                    $user_request_unit->updated_at = now();
+                    $user_request_unit->save();
+                }
+            }
+        }
+
+        $endingmsg = '.';
+
+        if ($request->input('request_status') == 'approved') {
+            $endingmsg = ' and denied adoption request to this animal from any other users (if any). Click "Adopted Animals" in menu to view approved requests.';
+        }
+
+        return redirect()->back()->with('approvemsg', 'Successfully '
+                . $request->input('request_status')
+                . ' adoption request for user id: '
+                . $request->input('user_id')
+                . ' with animal id: '
+                . $request->input('animal_id')
+                . $endingmsg);
     }
 
     /**
@@ -208,14 +165,4 @@ class UserRequestController extends Controller
     {
         //
     }
-
-    public function changeRequestStatus(Request $request){
-        $user_request = UserRequest::where('user_id', Auth::id())->where('animal_id')->get();
-
-        if($user_request['request_status'] == 'waiting_for_approval'){
-          $user_request->request_status = $request->input('request_status');
-          $user_request->save();
-        }
-    }
-
 }

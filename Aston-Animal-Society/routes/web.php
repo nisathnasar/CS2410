@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,16 @@ use App\Http\Controllers\AnimalController;
 
 use App\Http\Controllers\UserRequestController;
 
+use App\Http\Controllers\AdoptedAnimalController;
+
+use App\Http\Controllers\DeniedRequestController;
+
 Route::resource('animals', AnimalController::class);
 
 Route::resource('user_requests', UserRequestController::class);
+
+Route::resource('adopted_animals', AdoptedAnimalController::class);
+
+Route::resource('denied_requests', DeniedRequestController::class);
+
+Route::get('sortBy', [App\Http\Controllers\AnimalController::class, 'sortBy'])->name('sortBy');

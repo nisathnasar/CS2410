@@ -17,9 +17,12 @@ class CreateAnimalsTable extends Migration
             $table->id();
             $table->string('name');
             $table->date('date_of_birth');
-            $table->string('description', 256)->nullable();
-            $table->enum('availability', ['Available', 'Unavailable'])->default('Available');
+            $table->mediumText('description')->nullable();
+            $table->enum('availability', ['available', 'unavailable'])->default('available');
+            $table->enum('animal_type', ['cat', 'dog', 'bird', 'fish', 'reptile', 'horse', 'other'])->default('other');
             $table->string('image', 256)->nullable();
+            $table->string('image2', 256)->nullable();
+            $table->string('image3', 256)->nullable();
             $table->timestamps();
             $table->bigInteger('adopted_by')->unsigned()->nullable();
 

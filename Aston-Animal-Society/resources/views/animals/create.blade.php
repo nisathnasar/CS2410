@@ -40,17 +40,31 @@
                             <textarea rows="4" cols="50" name="description"> Notes about the animal </textarea>
                         </div>
                         <div class="col-md-8">
+                            <label >Type of Animal</label>
+                            <select name="animal_type" >
+                                <option value="cat">Cat</option>
+                                <option value="dog">Dog</option>
+                                <option value="bird">Bird</option>
+                                <option value="fish">Fish</option>
+                                <option value="reptile">Reptile</option>
+                                <option value="horse">Horse</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
                             <label >Availability</label>
                             <select name="availability" >
-                                <option value="Available">Available</option>
-                                <option value="Unavailable">Unavailable</option>
+                                <option value="available">available</option>
+                                <option value="unavailable">unavailable</option>
                             </select>
                         </div>
 
 
                         <div class="col-md-8">
-                        <label>Image</label>
+                        <label>Image - up to 3 images supported</label><br>
                             <input type="file" name="image" placeholder="Image file" />
+                            <input type="file" name="image2" placeholder="Image file" />
+                            <input type="file" name="image3" placeholder="Image file" />
                         </div>
                         <div class="col-md-6 col-md-offset-4">
                             <input type="submit" class="btn btn-primary" />

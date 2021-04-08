@@ -24,12 +24,35 @@
 
                 <!-- define the form -->
                 <div class="card-body">
-                    @csrf
                     <form class="form-horizontal" method="POST"
-                    action="{{url('user_requests') }}" enctype="multipart/form-data">
+                    action="{{url('animals') }}" enctype="multipart/form-data">
                         @csrf
+                        <div class="col-md-8">
+                            <label>Name</label>
+                            <input type="text" name="name" placeholder="name" />
+                        </div>
+                        <div class="col-md-8">
+                            <label>Date of Birth</label>
+                            <input type="date" name="date_of_birth">
+                        </div>
+                        <div class="col-md-8">
+                            <label >Description</label>
+                            <textarea rows="4" cols="50" name="description"> Notes about the animal </textarea>
+                        </div>
+                        <div class="col-md-8">
+                            <label >Availability</label>
+                            <select name="availability" >
+                                <option value="Available">Available</option>
+                                <option value="Unavailable">Unavailable</option>
+                            </select>
+                        </div>
+
+
+                        <div class="col-md-8">
+                        <label>Image</label>
+                            <input type="file" name="image" placeholder="Image file" />
+                        </div>
                         <div class="col-md-6 col-md-offset-4">
-                            <input name="id" type="hidden" value="{{$animals['id']}}">
                             <input type="submit" class="btn btn-primary" />
                             <input type="reset" class="btn btn-primary" />
                         </div>

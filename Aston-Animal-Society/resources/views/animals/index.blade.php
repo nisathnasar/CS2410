@@ -17,7 +17,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8 ">
                 <div class="card overflow-hidden">
-                    <div class="card-header">Animals - list of available animals</div>
+                    <div class="card-header">Animals - list of animals</div>
                     <div class="card-body">
                         <div class="container">
                             <div class="row justify-content-end">
@@ -40,7 +40,46 @@
                                             Descending
                                         </option>
                                     </select>
-                                    <button class="btn btn-info" type="submit">Sort</button>
+                                    <label for="sort_by">Filters</label>
+                                    <select name="availability" id="">
+                                        <option value="all" @if ($sortingDetails['availability'] == 'all') selected @endif>
+                                            All
+                                        </option>
+                                        <option value="available" @if ($sortingDetails['availability'] == 'available') selected @endif>
+                                            Available
+                                        </option>
+                                        <option value="unavailable" @if ($sortingDetails['availability'] == 'unavailable') selected @endif>
+                                            Unavailable
+                                        </option>
+                                    </select>
+
+                                    <select name="animal_type" id="">
+                                        <option value="all" @if ($sortingDetails['animal_type'] == 'all') selected @endif>
+                                            All
+                                        </option>
+                                        <option value="cat" @if ($sortingDetails['animal_type'] == 'cat') selected @endif>
+                                            cats
+                                        </option>
+                                        <option value="dog" @if ($sortingDetails['animal_type'] == 'dog') selected @endif>
+                                            dogs
+                                        </option>
+                                        <option value="bird" @if ($sortingDetails['animal_type'] == 'bird') selected @endif>
+                                            birds
+                                        </option>
+                                        <option value="fish" @if ($sortingDetails['animal_type'] == 'fish') selected @endif>
+                                            fishes
+                                        </option>
+                                        <option value="reptile" @if ($sortingDetails['animal_type'] == 'reptile') selected @endif>
+                                            reptiles
+                                        </option>
+                                        <option value="horse" @if ($sortingDetails['animal_type'] == 'horse') selected @endif>
+                                            horses
+                                        </option>
+                                        <option value="other" @if ($sortingDetails['animal_type'] == 'other') selected @endif>
+                                            other animals
+                                        </option>
+                                    </select>
+                                    <button class="btn btn-info" type="submit">Search</button>
                                 </form>
                             </div>
                         </div>
@@ -58,7 +97,11 @@
                             </thead>
                             <tbody>
                                 @foreach ($animals as $animal)
-                                    <tr>
+                                    <tr
+                                    @if($animal['availability'] == 'unavailable')
+                                        class="table-danger"
+                                    @endif
+                                    >
                                         <td colspan='1'>
                                             <img style="width:55px;height:55px"
                                                 src="{{ asset('storage/images/' . $animal['image']) }}">
@@ -92,22 +135,22 @@
 
                                             <td>
                                                 <form
-                                                    action="{{ action([App\Http\Controllers\UserRequestController::class, 'create']) }}"
+                                                    action="{{ action([App\Http\Controllers\AdoptionRequestController::class, 'create']) }}"
                                                     method="put">
                                                     @csrf
                                                     <input name="id" type="hidden" value="{{ $animal['id'] }}">
 
-                                                    @if (App\Models\UserRequest::where('user_id', Auth::id())->where('animal_id', $animal['id'])->first() == null &&
+                                                    @if (App\Models\AdoptionRequest::where('user_id', Auth::id())->where('animal_id', $animal['id'])->first() == null &&
                                                         App\Models\Animal::where('id', $animal['id'])->where('availability', 'available')->first() != null)
 
                                                         <button class="btn btn-primary" type="submit"
                                                             style="white-space: nowrap">Request for adoption</button>
 
-                                                    @elseif(App\Models\UserRequest::where('user_id', Auth::id())->
+                                                    @elseif(App\Models\AdoptionRequest::where('user_id', Auth::id())->
                                                         where('animal_id', $animal['id'])->first() != null)
 
                                                         {{-- if this record already exists, then print the status --}}
-                                                        {{ App\Models\UserRequest::select('request_status')->where('user_id', Auth::id())->where('animal_id', $animal['id'])->first()['request_status'] }}
+                                                        {{ App\Models\AdoptionRequest::select('request_status')->where('user_id', Auth::id())->where('animal_id', $animal['id'])->first()['request_status'] }}
 
                                                     @endif
 

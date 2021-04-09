@@ -12,15 +12,11 @@ class AnimalController extends Controller
 
     public function index(){
 
-        $animals = Animal::select('*')->orderBy('name')->get();
-        $animals = $animals->filter(function($item){
-            if($item['availability'] == 'available'){
-                return $item;
-            }
-        }
-        )->toArray();
-
-        $sortingDetails = ['sort_by' => 'name', 'sorting_order' => 'asc'];
+        $animals = Animal::select('*')->orderBy('name')->get()->toArray();
+        $sortingDetails = ['sort_by' => 'name',
+        'sorting_order' => 'asc',
+        'animal_type' => 'all',
+        'availability' => 'all'];
 
         return view('animals.index', compact('animals', 'sortingDetails'));
     }
@@ -28,14 +24,48 @@ class AnimalController extends Controller
     public function sortby(Request $request){
 
         $animals = Animal::select('*')->orderBy($request->input('sort_by'), $request->input('sorting_order'))->get();
-        $animals = $animals->filter(function($item){
-            if($item['availability'] == 'available'){
-                return $item;
-            }
+
+        $availability = $request->input('availability');
+
+        if($availability != 'all'){
+            $animals = $animals->filter(function($item) use ($availability){
+                if($item['availability'] == $availability){
+                    return $item;
+                }
+            });
         }
-        )->toArray();
-        $sortingDetails = ['sort_by' => $request->input('sort_by'), 'sorting_order' => $request->input('sorting_order')];
+
+        $type = $request->input('animal_type');
+
+        if($type != 'all'){
+            $animals = $animals->filter(function($item) use ($type){
+                if($item['animal_type'] == $type){
+                    return $item;
+                }
+            });
+        }
+
+        $animls = $animals->toArray();
+        $sortingDetails = ['sort_by' => $request->input('sort_by'),
+            'sorting_order' => $request->input('sorting_order'),
+            'animal_type' => $request->input('animal_type'),
+            'availability' => $request->input('availability')
+            ];
         return view('animals.index', compact('animals', 'sortingDetails'));
+    }
+
+    public function adoptedAnimals(){
+        if (!Gate::denies('add_animals')) {
+            $animals = Animal::all();
+            $animals = $animals->filter(function ($item) {
+                    if ($item['adopted_by'] != null) {
+                        return $item;
+                    }
+                })->toArray();
+            return view('animals.adopted_animals.adoptedanimals', compact('animals'));
+        } else{
+            return back();
+        }
     }
 
     public function show($id){
@@ -62,18 +92,13 @@ class AnimalController extends Controller
             'image3' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:500'
 
         ]);
-        //Handles the uploading of the image
-        if($request->hasFile('image')){
-            //Gets the filename with the extension
-            $fileNameWithExt = $request->file('image')->getClientOriginalName();
-            //just gets the filename
-            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-            //Just gets the extension
-            $extension = $request->file('image')->getClientOriginalExtension();
-            //Gets the filename to store
-            $fileNameToStore = $filename.'_'.time().'.'.$extension;
-            //Uploads the image
-            $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
+
+        if($request->hasFile('image')){                                                     //Handles the uploading of the image
+            $fileNameWithExt = $request->file('image')->getClientOriginalName();            //Gets the filename with the extension
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);                      //just gets the filename
+            $extension = $request->file('image')->getClientOriginalExtension();             //Just gets the extension
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;                         //Gets the filename to store
+            $path = $request->file('image')->storeAs('public/images', $fileNameToStore);    //Uploads the image
             }
         else{
             $fileNameToStore = 'noimage.jpg';
@@ -111,10 +136,7 @@ class AnimalController extends Controller
         $animal->image = $fileNameToStore;
         $animal->image2 = $fileNameToStore2;
         $animal->image3 = $fileNameToStore3;
-
-        // save the animal object
         $animal->save();
-        // generate a redirect HTTP response with a success message
         return back()->with('success', 'Animal has been added');
 
     }
@@ -146,24 +168,36 @@ class AnimalController extends Controller
         $animal->date_of_birth = $request->input('date_of_birth');
         $animal->description = $request->input('description');
         $animal->availability = $request->input('availability');
-        //$animal->image = $request->input('image');
+
         $animal->updated_at = now();
-        //Handles the uploading of the image
+
         if ($request->hasFile('image')){
-        //Gets the filename with the extension
-        $fileNameWithExt = $request->file('image')->getClientOriginalName();
-        //just gets the filename
-        $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-        //Just gets the extension
-        $extension = $request->file('image')->getClientOriginalExtension();
-        //Gets the filename to store
-        $fileNameToStore = $filename.'_'.time().'.'.$extension;
-        //Uploads the image
-        $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
-        } else {
-        $fileNameToStore = 'noimage.jpg';
+            $fileNameWithExt = $request->file('image')->getClientOriginalName();
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
+            $animal->image = $fileNameToStore;
         }
-        $animal->image = $fileNameToStore;
+
+        if($request->hasFile('image2')){
+            $fileNameWithExt = $request->file('image2')->getClientOriginalName();
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('image2')->getClientOriginalExtension();
+            $fileNameToStore2 = $filename.'_'.time().'.'.$extension;
+            $path = $request->file('image2')->storeAs('public/images', $fileNameToStore2);
+            $animal->image2 = $fileNameToStore2;
+        }
+
+        if($request->hasFile('image3')){
+            $fileNameWithExt = $request->file('image3')->getClientOriginalName();
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('image3')->getClientOriginalExtension();
+            $fileNameToStore3 = $filename.'_'.time().'.'.$extension;
+            $path = $request->file('image3')->storeAs('public/images', $fileNameToStore3);
+            $animal->image3 = $fileNameToStore3;
+        }
+
         $animal->save();
         return redirect('animals');
     }

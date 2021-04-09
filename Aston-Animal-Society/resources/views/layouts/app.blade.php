@@ -43,10 +43,11 @@
                         @else
 
                             <li class="nav-item">
-                                <a href="{{ url('animals') }}" class="nav-link">Animals</a>
+                                <a href="{{ url('') }}" class="nav-link">Animals</a>
                             </li>
 
                             @if (!Gate::denies('add_animals'))
+
                                 <li class="nav-item">
                                     <a href="{{ url('animals/create') }}" class="nav-link">Add Animal</a>
                                 </li>
@@ -56,14 +57,15 @@
                                 </li>
 
                                 <li class="nav-item">
-                                    <a href="{{ url('user_requests') }}" class="nav-link">Adoption Requests</a>
+                                    <a href="{{ url('adoption_requests') }}" class="nav-link">Adoption Requests</a>
                                 </li>
 
-
+                            @elseif(Gate::denies('add_animals'))
 
                                 <li class="nav-item">
-                                    <a href="{{ url('denied_requests') }}" class="nav-link">Denied Requests</a>
+                                    <a href="{{ url('my_adoption_requests') }}" class="nav-link">My Adoption Requests</a>
                                 </li>
+
                             @endif
 
                         @endguest

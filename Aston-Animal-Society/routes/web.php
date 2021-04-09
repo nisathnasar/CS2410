@@ -23,20 +23,22 @@ Auth::routes();
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('');
 
+Route::get('/home', [App\Http\Controllers\AnimalController::class, 'index'])->name('');
+
 use App\Http\Controllers\AnimalController;
 
-use App\Http\Controllers\UserRequestController;
-
-use App\Http\Controllers\AdoptedAnimalController;
-
-use App\Http\Controllers\DeniedRequestController;
+use App\Http\Controllers\AdoptionRequestController;
 
 Route::resource('animals', AnimalController::class);
 
-Route::resource('user_requests', UserRequestController::class);
-
-Route::resource('adopted_animals', AdoptedAnimalController::class);
-
-Route::resource('denied_requests', DeniedRequestController::class);
+Route::resource('adoption_requests', AdoptionRequestController::class);
 
 Route::get('sortBy', [App\Http\Controllers\AnimalController::class, 'sortBy'])->name('sortBy');
+
+Route::get('sortAndFilterRequests', [App\Http\Controllers\AdoptionRequestController::class, 'sortBy'])->name('sortAndFilterRequests');
+
+Route::get('adopted_animals', [App\Http\Controllers\AnimalController::class, 'adoptedAnimals'])->name('adopted_animals');
+
+Route::get('denied_requests', [App\Http\Controllers\AdoptionRequestController::class, 'deniedRequests'])->name('denied_requests');
+
+Route::get('my_adoption_requests', [App\Http\Controllers\AdoptionRequestController::class, 'myAdoptionRequests'])->name('my_adoption_requests');

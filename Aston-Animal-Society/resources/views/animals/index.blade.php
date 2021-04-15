@@ -16,9 +16,12 @@
         @endif
         <div class="row justify-content-center">
             <div class="col-md-8 ">
-                <div class="card overflow-hidden">
+                <div class="card overflow-auto">
                     <div class="card-header">Animals - list of animals</div>
                     <div class="card-body">
+
+
+
                         <div class="container">
                             <div class="row justify-content-end">
                                 <form action="{{ action([App\Http\Controllers\AnimalController::class, 'sortBy']) }}">
@@ -27,6 +30,9 @@
                                     <select name="sort_by" id="">
                                         <option value="name" @if ($sortingDetails['sort_by'] == 'name') selected @endif>
                                             Name
+                                        </option>
+                                        <option value="id" @if ($sortingDetails['sort_by'] == 'id') selected @endif>
+                                            Animal ID
                                         </option>
                                         <option value="date_of_birth" @if ($sortingDetails['sort_by'] == 'date_of_birth') selected @endif>
                                             Date of Birth
@@ -79,17 +85,21 @@
                                             other animals
                                         </option>
                                     </select>
-                                    <button class="btn btn-info" type="submit">Search</button>
+                                    <button class="btn btn-info" type="submit">Apply</button>
                                 </form>
                             </div>
                         </div>
+
+
+
                         <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th></th>
+                                    <th>Animal ID</th>
                                     <th>Name</th>
                                     <th>Date of Birth</th>
-                                    <th>Description</th>
+                                    {{-- <th>Description</th> --}}
                                     <th>Animal Type</th>
                                     <th>Availability</th>
                                     <th colspan="3"></th>
@@ -98,30 +108,42 @@
                             <tbody>
                                 @foreach ($animals as $animal)
                                     <tr
-                                    @if($animal['availability'] == 'unavailable')
-                                        class="table-danger"
-                                    @endif
-                                    >
+
+                                    @if(App\Models\AdoptionRequest::select('request_status')->where('user_id', Auth::id())->where('animal_id', $animal['id'])->exists())
+                                        @if(App\Models\AdoptionRequest::select('request_status')->where('user_id', Auth::id())->where('animal_id', $animal['id'])->first()['request_status'] == 'approved')
+                                            class="table-success"
+                                        @elseif(App\Models\AdoptionRequest::select('request_status')->where('user_id', Auth::id())->where('animal_id', $animal['id'])->first()['request_status'] == 'denied')
+                                            class="table-danger"
+                                        @endif
+                                    @endif >
+
                                         <td colspan='1'>
-                                            <img style="width:55px;height:55px"
-                                                src="{{ asset('storage/images/' . $animal['image']) }}">
+                                            <img style="width:55px;height:55px" class="img-fluid"
+                                                @if ($animal['image'] != 'noimage.jpg')
+                                                    src="{{ asset('storage/images/' . $animal['image']) }}"
+                                                @elseif ($animal['image2'] != 'noimage.jpg')
+                                                    src="{{ asset('storage/images/' . $animal['image2']) }}"
+                                                @else
+                                                    src="{{ asset('storage/images/' . $animal['image3']) }}"
+                                                @endif >
                                         </td>
 
-                                        <td>{{ $animal['name'] }}</td>
-                                        <td>{{ $animal['date_of_birth'] }}</td>
-                                        <td>{{ $animal['description'] }}</td>
-                                        <td>{{ $animal['animal_type'] }}</td>
-                                        <td>{{ $animal['availability'] }}</td>
+                                        <td class="align-middle text-center">{{ $animal['id'] }}</td>
+                                        <td class="align-middle">{{ $animal['name'] }}</td>
+                                        <td class="align-middle">{{ $animal['date_of_birth'] }}</td>
+                                        {{-- <td class="align-middle">{{ $animal['description'] }}</td> --}}
+                                        <td class="align-middle">{{ $animal['animal_type'] }}</td>
+                                        <td class="align-middle">{{ $animal['availability'] }}</td>
 
-                                        <td><a href="{{ route('animals.show', ['animal' => $animal['id']]) }}"
-                                                class="btn btnprimary">Details</a></td>
+                                        <td class="align-middle"><a href="{{ route('animals.show', ['animal' => $animal['id']]) }}"
+                                                class="btn btn-secondary">Details</a></td>
 
                                         @if (!Gate::denies('add_animals'))
 
-                                            <td><a href="{{ route('animals.edit', ['animal' => $animal['id']]) }}"
-                                                    class="btn btnwarning">Edit</a></td>
+                                            <td class="align-middle"><a href="{{ route('animals.edit', ['animal' => $animal['id']]) }}"
+                                                    class="btn btn-secondary">Edit</a></td>
 
-                                            <td>
+                                            <td class="align-middle">
                                                 <form
                                                     action="{{ action([App\Http\Controllers\AnimalController::class, 'destroy'], ['animal' => $animal['id']]) }}"
                                                     method="post">
@@ -133,7 +155,7 @@
 
                                         @else
 
-                                            <td>
+                                            <td class="align-middle">
                                                 <form
                                                     action="{{ action([App\Http\Controllers\AdoptionRequestController::class, 'create']) }}"
                                                     method="put">
@@ -150,8 +172,17 @@
                                                         where('animal_id', $animal['id'])->first() != null)
 
                                                         {{-- if this record already exists, then print the status --}}
-                                                        {{ App\Models\AdoptionRequest::select('request_status')->where('user_id', Auth::id())->where('animal_id', $animal['id'])->first()['request_status'] }}
+                                                        <strong>
 
+                                                        {{-- {{ App\Models\AdoptionRequest::select('request_status')->where('user_id', Auth::id())->where('animal_id', $animal['id'])->first()['request_status'] }} --}}
+                                                        @if(App\Models\AdoptionRequest::select('request_status')->where('user_id', Auth::id())->where('animal_id', $animal['id'])->first()['request_status'] == 'approved')
+                                                            ADOPTED
+                                                        @elseif(App\Models\AdoptionRequest::select('request_status')->where('user_id', Auth::id())->where('animal_id', $animal['id'])->first()['request_status'] == 'waiting_for_approval')
+                                                            DECISION PENDING
+                                                        @elseif(App\Models\AdoptionRequest::select('request_status')->where('user_id', Auth::id())->where('animal_id', $animal['id'])->first()['request_status'] == 'denied')
+                                                            DENIED
+                                                        @endif
+                                                        </strong>
                                                     @endif
 
                                                 </form>

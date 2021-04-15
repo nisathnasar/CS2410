@@ -11,18 +11,23 @@
             <div class="card overflow-auto" >
                 <div class="card-header">Adoption Requests - list of active adoption requests made by users</div>
                 <div class="card-body ">
+
+
+
                     <div class="container">
                         <div class="row justify-content-end">
                             <form action="{{ action([App\Http\Controllers\AdoptionRequestController::class, 'sortBy']) }}">
                                 @csrf
                                 <label for="sort_by">Sort by</label>
                                 <select name="sort_by" id="">
+
                                     <option value="animal_name" @if ($sortingDetails['sort_by'] == 'animal_name') selected @endif>
                                         Animal Name
                                     </option>
                                     <option value="requester_name" @if ($sortingDetails['sort_by'] == 'requester_name') selected @endif>
                                         Requester Name
                                     </option>
+
                                     <option value="animal_id" @if ($sortingDetails['sort_by'] == 'animal_id') selected @endif>
                                         Animal ID
                                     </option>
@@ -45,7 +50,7 @@
                                         All
                                     </option>
                                     <option value="waiting_for_approval" @if ($sortingDetails['request_status'] == 'waiting_for_approval') selected @endif>
-                                        Waiting for Approval
+                                        Pending
                                     </option>
                                     <option value="approved" @if ($sortingDetails['request_status'] == 'approved') selected @endif>
                                         Approved
@@ -93,10 +98,11 @@
                                         other animals
                                     </option>
                                 </select>
-                                <button class="btn btn-info" type="submit">Search</button>
+                                <button class="btn btn-info" type="submit">Apply</button>
                             </form>
                         </div>
                     </div>
+
 
 
                     @csrf
@@ -128,22 +134,39 @@
                             @endif
                             >
                                 <td colspan='1' >
-                                    <img style="width:55px;height:55px" src="{{ asset('storage/images/'. App\Models\Animal::select('image')->where('id', $adoptionRequest['animal_id'])->first()['image'] ) }}">
+                                    <img style="width:55px;height:55px"
+                                        @if (App\Models\Animal::select('image')->where('id', $adoptionRequest['animal_id'])->first()['image'] != 'noimage.jpg')
+                                        src="{{ asset('storage/images/' . App\Models\Animal::select('image')->where('id', $adoptionRequest['animal_id'])->first()['image']) }}"
+                                        @elseif (App\Models\Animal::select('image2')->where('id', $adoptionRequest['animal_id'])->first()['image2'] != 'noimage.jpg')
+                                            src="{{ asset('storage/images/' . App\Models\Animal::select('image2')->where('id', $adoptionRequest['animal_id'])->first()['image2']) }}"
+                                        @else
+                                            src="{{ asset('storage/images/' . App\Models\Animal::select('image3')->where('id', $adoptionRequest['animal_id'])->first()['image3']) }}"
+                                        @endif >
                                 </td>
 
-                                <td>{{$adoptionRequest['animal_id']}}</td>
+                                <td class="align-middle">{{$adoptionRequest['animal_id']}}</td>
 
-                                <td>{{App\Models\Animal::select('name')->where('id', $adoptionRequest['animal_id'])->first()['name']}}</td>
+                                <td class="align-middle">{{App\Models\Animal::select('name')->where('id', $adoptionRequest['animal_id'])->first()['name']}}</td>
 
-                                <td>{{App\Models\Animal::select('animal_type')->where('id', $adoptionRequest['animal_id'])->first()['animal_type']}}</td>
+                                <td class="align-middle">{{App\Models\Animal::select('animal_type')->where('id', $adoptionRequest['animal_id'])->first()['animal_type']}}</td>
 
-                                <td>{{$adoptionRequest['user_id']}}</td>
+                                <td class="align-middle">{{$adoptionRequest['user_id']}}</td>
 
-                                <td>{{App\Models\User::select('name')->where('id', $adoptionRequest['user_id'])->first()['name']}}</td>
+                                <td class="align-middle">{{App\Models\User::select('name')->where('id', $adoptionRequest['user_id'])->first()['name']}}</td>
 
-                                <td>{{$adoptionRequest['request_status']}}</td>
+                                <td class="align-middle">
+                                    <strong>
+                                        @if($adoptionRequest['request_status'] == 'approved')
+                                            APPROVED
+                                        @elseif($adoptionRequest['request_status'] == 'waiting_for_approval')
+                                            DECISION PENDING
+                                        @elseif($adoptionRequest['request_status'] == 'denied')
+                                            DENIED
+                                        @endif
+                                    </strong>
+                                </td>
 
-                                <td>
+                                <td class="align-middle">
                                     @if (App\Models\AdoptionRequest::where('animal_id', $adoptionRequest['animal_id'])
                                     ->where('user_id', $adoptionRequest['user_id'])->first()['request_status'] != 'denied'
                                         &&
@@ -169,7 +192,7 @@
                                     @endif
 
                                 </td>
-                                <td>
+                                <td class="align-middle">
                                     @if (App\Models\AdoptionRequest::where('animal_id', $adoptionRequest['animal_id'])
                                     ->where('user_id', $adoptionRequest['user_id'])->first()['request_status'] != 'denied'
                                         &&

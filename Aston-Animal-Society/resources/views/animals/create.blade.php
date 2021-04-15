@@ -28,19 +28,19 @@
                     action="{{url('animals') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="col-md-8">
-                            <label>Name</label>
+                            <label><strong>Name</strong></label>
                             <input type="text" name="name" placeholder="name" />
                         </div>
                         <div class="col-md-8">
-                            <label>Date of Birth</label>
+                            <label><strong>Date of Birth</strong></label>
                             <input type="date" name="date_of_birth">
                         </div>
                         <div class="col-md-8">
-                            <label >Description</label>
+                            <label ><strong>Description</strong></label>
                             <textarea rows="4" cols="50" name="description"> Notes about the animal </textarea>
                         </div>
                         <div class="col-md-8">
-                            <label >Type of Animal</label>
+                            <label ><strong>Type of Animal</strong></label>
                             <select name="animal_type" >
                                 <option value="cat">Cat</option>
                                 <option value="dog">Dog</option>
@@ -52,7 +52,7 @@
                             </select>
                         </div>
                         <div class="col-md-8">
-                            <label >Availability</label>
+                            <label ><strong>Availability</strong></label>
                             <select name="availability" >
                                 <option value="available">available</option>
                                 <option value="unavailable">unavailable</option>
@@ -61,10 +61,13 @@
 
 
                         <div class="col-md-8">
-                        <label>Image - up to 3 images supported</label><br>
-                            <input type="file" name="image" placeholder="Image file" />
-                            <input type="file" name="image2" placeholder="Image file" />
-                            <input type="file" name="image3" placeholder="Image file" />
+                        <label><strong>Image - up to 3 images supported</label><br>
+                            <label for="image"><strong>Image 1</strong></label> <br>
+                            <input type="file" name="image" placeholder="Image file" /> <br>
+                            <label for="image2"><strong>Image 2</strong></label> <br>
+                            <input type="file" name="image2" placeholder="Image file" /> <br>
+                            <label for="image3"><strong>Image 3</strong></label> <br>
+                            <input type="file" name="image3" placeholder="Image file" /> <br> <br>
                         </div>
                         <div class="col-md-6 col-md-offset-4">
                             <input type="submit" class="btn btn-primary" />

@@ -37,8 +37,15 @@ Route::get('sortBy', [App\Http\Controllers\AnimalController::class, 'sortBy'])->
 
 Route::get('sortAndFilterRequests', [App\Http\Controllers\AdoptionRequestController::class, 'sortBy'])->name('sortAndFilterRequests');
 
+Route::get('sortAndFilterAdoptedAnimals', [App\Http\Controllers\AnimalController::class, 'sortAndFilterAdoptedAnimals'])->name('sortAndFilterAdoptedAnimals');
+
+Route::get('sortAndFilterMyAdoptionRequests', [App\Http\Controllers\AdoptionRequestController::class, 'sortAndFilterMyAdoptionRequests'])->name('sortAndFilterMyAdoptionRequests');
+
 Route::get('adopted_animals', [App\Http\Controllers\AnimalController::class, 'adoptedAnimals'])->name('adopted_animals');
 
 Route::get('denied_requests', [App\Http\Controllers\AdoptionRequestController::class, 'deniedRequests'])->name('denied_requests');
 
 Route::get('my_adoption_requests', [App\Http\Controllers\AdoptionRequestController::class, 'myAdoptionRequests'])->name('my_adoption_requests');
+
+
+
